@@ -1,0 +1,14 @@
+class Complex:
+  def __init__(self,real_part,img_part):
+    self.real_part=real_part
+    self.img_part=img_part
+
+
+  def add(self,b):
+    return Complex(self.real_part+b.real_part,self.img_part+b.img_part)
+c1=Complex(3,4)
+c2=Complex(4,5)
+c3=c2.add(c1)
+print(f"c1:{c1.real_part} +{c1.img_part}i")
+print(f"c2:{c2.real_part} +{c2.img_part}i")
+print(f"c1+c2:{c3.real_part} +{c3.img_part}i")

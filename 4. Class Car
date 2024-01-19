@@ -1,0 +1,35 @@
+from abc import ABC, abstractmethod
+
+class Car(ABC):
+    @abstractmethod
+    def Mileage(self):
+        pass
+
+    def Display(self):
+        print(f"CAR name = {self.__class__.__name__}")
+
+class Sedan(Car):
+    def Mileage(self,mil):
+        print(f"{self.__class__.__name__} has milage {mil} ")
+
+class SUV(Car):
+    def Mileage(self,mil):
+        print(f"{self.__class__.__name__} has milage {mil} ")
+
+class ElectricCar(Car):
+    def Mileage(self,unit):
+        print(f"{self.__class__.__name__} has milage {unit} with full charge ")
+
+
+sedan_car = Sedan()
+suv_car = SUV()
+electric_car = ElectricCar()
+
+sedan_car.Display()
+sedan_car.Mileage(12)
+
+suv_car.Display()
+suv_car.Mileage(15)
+
+electric_car.Display()
+electric_car.Mileage(180)

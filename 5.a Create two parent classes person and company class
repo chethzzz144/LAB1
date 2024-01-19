@@ -1,0 +1,25 @@
+class Person:
+  def __init__(self,name):
+    self.name=name
+  def display(self):
+    return self.name
+class Company:
+  def __init__(self,c_name):
+    self.c_name=c_name
+
+  def display1(self):
+    return self.c_name
+
+class Employee(Person,Company):
+  def __init__(self,name,c_name,salary):
+    self.salary=salary
+    Person.__init__(self,name)
+    Company.__init__(self,c_name)
+
+  def display2(self):
+    print(f"Employee name:{self.name}")
+    print(f"Working at {self.c_name}")
+    print(f"Has salary:{self.salary}")
+
+e1=Employee("Ram","Tata",500000)
+e1.display2()

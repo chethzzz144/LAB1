@@ -1,0 +1,13 @@
+class songs:
+  def __init__(self,lyrics):
+    self.lyrics=lyrics
+  @property
+  def happy_birthday(self):
+    for lyric in lyrics:
+      print(lyric)
+
+lyrics = ["May god bless you,",
+          "Have a sunshine on you,",
+          "Happy Birthday to you!"]
+obj=songs(lyrics)
+obj.happy_birthday

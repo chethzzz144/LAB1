@@ -1,0 +1,42 @@
+class FormulaError(Exception):
+    def __init__(self, message="Invalid formula. Please enter a valid formula with format: number operator number"):
+        self.message = message
+        super().__init__(self.message)
+
+def calculate(formula):
+    try:
+        elements = formula.split()
+        
+        # Check if there are exactly 3 elements
+        if len(elements) != 3:
+            raise FormulaError("Invalid number of elements in the formula.")
+        
+        num1 = float(elements[0])
+        operator = elements[1]
+        num2 = float(elements[2])
+        
+        # Check if the operator is valid
+        if operator not in ['+', '-']:
+            raise FormulaError("Invalid operator. Please use '+' or '-'.")
+        
+        # Perform the calculation
+        if operator == '+':
+            result = num1 + num2
+        else:
+            result = num1 - num2
+        
+        print("Result:", result)
+    
+    except ValueError:
+        raise FormulaError("Invalid number. Please enter valid numeric values.")
+
+while True:
+    user_input = input("Enter a formula (or 'quit' to exit): ")
+    
+    if user_input.lower() == 'quit':
+        break
+    
+    try:
+        calculate(user_input)
+    except FormulaError as e:
+        print(f"Error: {e}")

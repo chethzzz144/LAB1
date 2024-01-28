@@ -1,53 +1,53 @@
 import threading
-import queue  # Add this line to import the 'queue' module
 import random
 import time
-import sys
 
-def generator_thread():
+def generate_random_integer():
     while True:
         value = random.randint(1, 100)
-        print(f"Generated: {value}")
+        print(f"Generated random integer: {value}")
+
         if value % 2 == 0:
-            even_queue.put(value)
+            even_thread.event.set()
+            even_thread.value = value
         else:
-            odd_queue.put(value)
+            odd_thread.event.set()
+            odd_thread.value = value
+
         time.sleep(1)
 
-def square_thread():
+def compute_square():
     while True:
-        value = even_queue.get()
-        square_value = value ** 2
-        print(f"Square: {square_value}")
-        even_queue.task_done()
+        even_thread.event.wait()
+        square_value = even_thread.value ** 2
+        print(f"Square of {even_thread.value}: {square_value}")
+        even_thread.event.clear()
 
-def cube_thread():
+def compute_cube():
     while True:
-        value = odd_queue.get()
-        cube_value = value ** 3
-        print(f"Cube: {cube_value}")
-        odd_queue.task_done()
+        odd_thread.event.wait()
+        cube_value = odd_thread.value ** 3
+        print(f"Cube of {odd_thread.value}: {cube_value}")
+        odd_thread.event.clear()
 
-# Queue to communicate between generator_thread and square_thread
-even_queue = queue.Queue()
+# Create thread objects
+random_thread = threading.Thread(target=generate_random_integer)
+even_thread = threading.Thread(target=compute_square)
+odd_thread = threading.Thread(target=compute_cube)
 
-# Queue to communicate between generator_thread and cube_thread
-odd_queue = queue.Queue()
+# Set event flags to False initially
+even_thread.event = threading.Event()
+even_thread.event.clear()
 
-# Create threads
-generator = threading.Thread(target=generator_thread, daemon=True)
-square = threading.Thread(target=square_thread, daemon=True)
-cube = threading.Thread(target=cube_thread, daemon=True)
+odd_thread.event = threading.Event()
+odd_thread.event.clear()
 
-# Start threads
-generator.start()
-square.start()
-cube.start()
+# Start the threads
+random_thread.start()
+even_thread.start()
+odd_thread.start()
 
-# Keep the main thread alive
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Program terminated.")
-    sys.exit()
+# Wait for all threads to finish (which won't happen in this case since they run indefinitely)
+random_thread.join()
+even_thread.join()
+odd_thread.join()

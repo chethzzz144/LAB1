@@ -4,43 +4,43 @@ import sys
 # Initialize Pygame
 pygame.init()
 
-# Set up display
-width, height = 400, 400
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Shapes Drawing")
+# Define colors
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
 
-# Colors
-blue = (0, 0, 255)
-green = (0, 255, 0)
-black = (0, 0, 0)
+# Set up the Pygame window
+window_size = (400, 400)
+screen = pygame.display.set_mode(window_size)
+pygame.display.set_caption("Pygame Shapes")
 
-# Run the game loop
+# Main loop
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-    # Draw Polygon
-    polygon_vertices = [(146, 0), (291, 106), (236, 277), (56, 277), (0, 106)]
-    pygame.draw.polygon(screen, blue, polygon_vertices)
+    # Clear the screen
+    screen.fill((255, 255, 255))
 
-    # Draw Line
-    pygame.draw.line(screen, green, (60, 300), (120, 300), 4)
+    # Draw a blue polygon
+    pygame.draw.polygon(screen, BLUE, [(146, 0), (291, 106), (236, 277), (56, 277), (0, 106)])
 
-    # Draw Circle
-    pygame.draw.circle(screen, green, (300, 50), 20)
+    # Draw a green line
+    pygame.draw.line(screen, GREEN, (60, 300), (120, 300), 4)
 
-    # Draw Ellipse
-    ellipse_rect = pygame.Rect(300, 250, 40, 80)
-    pygame.draw.ellipse(screen, black, ellipse_rect, 1)
+    # Draw a green-filled circle
+    pygame.draw.circle(screen, GREEN, (300, 50), 20)
 
-    # Draw Rectangle
-    rectangle_rect = pygame.Rect(150, 300, 100, 50)
-    pygame.draw.rect(screen, black, rectangle_rect)
+    # Draw a black ellipse
+    pygame.draw.ellipse(screen, BLACK, (300, 250, 40, 80), 1)
+
+    # Draw a black rectangle
+    pygame.draw.rect(screen, BLACK, (150, 300, 100, 50))
 
     # Update the display
     pygame.display.flip()
 
-    # Control the frame rate
-    pygame.time.Clock().tick(30)
+    # Cap the frame rate
+    pygame.time.Clock().tick(60)

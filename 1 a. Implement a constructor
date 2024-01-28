@@ -1,40 +1,40 @@
 class WrongAge(Exception):
-    def __init__(self, message="Invalid age. Age should be greater than or equal to 0."):
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 class AgeInvalid(Exception):
-    def __init__(self, message="Invalid age. Son's age should be less than father's age."):
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 class Father:
     def __init__(self, age):
         if age < 0:
-            raise WrongAge("Father's age cannot be negative.")
+            raise WrongAge("Age cannot be negative")
         self.age = age
 
 class Son(Father):
     def __init__(self, father_age, son_age):
-        super().__init__(father_age)
+        super().__init__(father_age)  # Call the constructor of the base class (Father)
+        
         if son_age >= father_age:
-            raise AgeInvalid("Son's age should be less than father's age.")
+            raise AgeInvalid("Son's age should be less than Father's age")
+        
         self.son_age = son_age
 
 # Example usage:
 try:
-    father = Father(-5)  # This will raise WrongAge exception
-except WrongAge as e:
-    print(e)
-
-try:
-    son = Son(40, 45)  # This will raise AgeInvalid exception
-except (WrongAge, AgeInvalid) as e:
-    print(e)
-
-try:
-    son = Son(40, 30)  # This will create a Father instance with age 40 and a Son instance with age 30
-    print("Father's age:", son.age)
+    father_age = int(input("Enter father's age: "))
+    son_age = int(input("Enter son's age: "))
+    
+    father = Father(father_age)
+    son = Son(father_age, son_age)
+    
+    print("Father's age:", father.age)
     print("Son's age:", son.son_age)
-except (WrongAge, AgeInvalid) as e:
-    print(e)
+
+except WrongAge as e:
+    print("Error:", e)
+
+except AgeInvalid as e:
+    print("Error:", e)
+
+except ValueError:
+    print("Please enter valid age values.")

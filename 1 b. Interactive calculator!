@@ -1,42 +1,38 @@
 class FormulaError(Exception):
-    def __init__(self, message="Invalid formula. Please enter a valid formula with format: number operator number"):
-        self.message = message
-        super().__init__(self.message)
+    pass
 
-def calculate(formula):
-    try:
-        elements = formula.split()
-        
-        # Check if there are exactly 3 elements
-        if len(elements) != 3:
-            raise FormulaError("Invalid number of elements in the formula.")
-        
-        num1 = float(elements[0])
-        operator = elements[1]
-        num2 = float(elements[2])
-        
-        # Check if the operator is valid
-        if operator not in ['+', '-']:
-            raise FormulaError("Invalid operator. Please use '+' or '-'.")
-        
-        # Perform the calculation
-        if operator == '+':
-            result = num1 + num2
-        else:
-            result = num1 - num2
-        
-        print("Result:", result)
-    
-    except ValueError:
-        raise FormulaError("Invalid number. Please enter valid numeric values.")
+def calculate_result(number1, operator, number2):
+    if operator == '+':
+        return number1 + number2
+    elif operator == '-':
+        return number1 - number2
+    else:
+        raise FormulaError("Invalid operator. Only '+' and '-' are allowed.")
 
 while True:
-    user_input = input("Enter a formula (or 'quit' to exit): ")
-    
-    if user_input.lower() == 'quit':
-        break
-    
     try:
-        calculate(user_input)
+        user_input = input("Enter a formula (e.g., 1 + 1) or 'quit' to exit: ")
+        
+        if user_input.lower() == 'quit':
+            break  # Exit the loop if the user enters 'quit'
+
+        elements = user_input.split()
+        
+        if len(elements) != 3:
+            raise FormulaError("Invalid formula. Please provide a formula with 3 elements.")
+        
+        number1 = float(elements[0])
+        operator = elements[1]
+        number2 = float(elements[2])
+
+        if operator not in ('+', '-'):
+            raise FormulaError("Invalid operator. Only '+' and '-' are allowed.")
+
+        result = calculate_result(number1, operator, number2)
+        print("Result:", result)
+
     except FormulaError as e:
-        print(f"Error: {e}")
+        print("Error:", e)
+    
+    except ValueError:
+        print("Error: Invalid input. Please provide valid numeric values.")

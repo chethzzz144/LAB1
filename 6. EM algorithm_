@@ -1,0 +1,69 @@
+import numpy as np
+from scipy.stats import multivariate_normal
+
+def initialize_parameters(data, num_clusters):
+    np.random.seed(42)
+    means = np.random.rand(num_clusters, data.shape[1])
+    covariances = [np.eye(data.shape[1]) for _ in range(num_clusters)]
+    weights = np.ones(num_clusters) / num_clusters
+    return means, covariances, weights
+
+def expectation(data, means, covariances, weights):
+    num_clusters = len(means)
+    responsibilities = np.zeros((data.shape[0], num_clusters))
+
+    for k in range(num_clusters):
+        probabilities = multivariate_normal.pdf(data, means[k], covariances[k])
+        responsibilities[:, k] = weights[k] * probabilities
+
+    responsibilities /= responsibilities.sum(axis=1, keepdims=True)
+    return responsibilities
+
+def maximization(data, responsibilities):
+    num_clusters = responsibilities.shape[1]
+    num_points = responsibilities.sum(axis=0)
+
+    weights = num_points / data.shape[0]
+
+    means = np.dot(responsibilities.T, data) / num_points[:, np.newaxis]
+
+    covariances = []
+    for k in range(num_clusters):
+        diff = data - means[k]
+        cov_k = np.dot(responsibilities[:, k] * diff.T, diff) / num_points[k]
+        covariances.append(cov_k)
+
+    return means, covariances, weights
+
+def em_algorithm(data, num_clusters, max_iterations=100, tol=1e-6):
+    means, covariances, weights = initialize_parameters(data, num_clusters)
+
+    for iteration in range(max_iterations):
+        responsibilities = expectation(data, means, covariances, weights)
+
+        new_means, new_covariances, new_weights = maximization(data, responsibilities)
+
+        if np.linalg.norm(np.array(new_means) - np.array(means)) < tol and \
+           np.linalg.norm(np.array(new_covariances) - np.array(covariances)) < tol and \
+           np.linalg.norm(new_weights - weights) < tol:
+            break
+
+        means, covariances, weights = new_means, new_covariances, new_weights
+
+    return means, covariances, weights
+
+if __name__ == "__main__":
+    np.random.seed(42)
+    data1 = np.random.multivariate_normal([3, 3], [[1, 0.5], [0.5, 1]], 100)
+    data2 = np.random.multivariate_normal([-3, -3], [[1, -0.5], [-0.5, 1]], 100)
+    data = np.vstack([data1, data2])
+
+    num_clusters = 2
+    estimated_means, estimated_covariances, estimated_weights = em_algorithm(data, num_clusters)
+
+    print("Estimated means:")
+    print(estimated_means)
+    print("\nEstimated covariances:")
+    print(estimated_covariances)
+    print("\nEstimated weights:")
+    print(estimated_weights)

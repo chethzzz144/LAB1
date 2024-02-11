@@ -1,0 +1,42 @@
+import nltk
+nltk.download('stopwords')
+
+from gensim.models import Word2Vec
+from sklearn.metrics.pairwise import cosine_similarity
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import numpy as np
+
+documents = [
+    "This is the first document.",
+    "This document is the second document.",
+    "And this is the third one.",
+    "Is this the first document?"
+]
+
+tokenized_documents = [word_tokenize(doc.lower()) for doc in documents]
+
+stop_words = set(stopwords.words('english'))
+filtered_documents = [[word for word in doc if word not in stop_words] for doc in tokenized_documents]
+
+word2vec_model = Word2Vec(filtered_documents, vector_size=100, window=5, min_count=1, workers=4)
+
+def jaccard_similarity(doc1, doc2):
+    intersection = len(set(doc1).intersection(doc2))
+    union = len(set(doc1).union(doc2))
+    return intersection / union
+
+cosine_similarities = np.zeros((len(documents), len(documents)))
+for i in range(len(documents)):
+    for j in range(len(documents)):
+        cosine_similarities[i, j] = word2vec_model.wv.n_similarity(filtered_documents[i], filtered_documents[j])
+
+print("Cosine Similarity (Word2Vec):")
+for i in range(len(documents)):
+    for j in range(i+1, len(documents)):
+        print(f"Doc {i+1} and Doc {j+1}: {cosine_similarities[i, j]}")
+
+print("\nJaccard Similarity:")
+for i in range(len(documents)):
+    for j in range(i+1, len(documents)):
+        print(f"Doc {i+1} and Doc {j+1}: {jaccard_similarity(filtered_documents[i], filtered_documents[j])}")

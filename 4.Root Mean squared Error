@@ -1,45 +1,23 @@
-import numpy as np
-from sklearn.metrics import mean_squared_error
-from math import sqrt
+!pip install scikit-surprise
+from surprise import Dataset, Reader
+from surprise.model_selection import train_test_split
+from surprise import accuracy
+from surprise.prediction_algorithms import KNNBasic
+import pandas as pd
 
-ratings = np.array([[5, 3, 0, 1],
-                    [4, 0, 0, 1],
-                    [1, 1, 0, 5],
-                    [1, 0, 0, 4],
-                    [0, 1, 5, 4]])
+data = {'user_id': [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+        'item_id': [101, 102, 101, 103, 102, 104, 105, 106, 107, 108],
+        'rating': [5, 4, 3, 2, 5, 4, 5, 4, 3, 2]}
 
-user_means = np.mean(ratings, axis=1)
+reader = Reader(rating_scale=(1, 5))
+surprise_data = Dataset.load_from_df(pd.DataFrame(data), reader)
 
-normalized_ratings = ratings - user_means.reshape(-1, 1)
+trainset, testset = train_test_split(surprise_data, test_size=0.2)
 
-similarity_matrix = np.dot(normalized_ratings, normalized_ratings.T) / (np.linalg.norm(normalized_ratings, axis=1).reshape(-1, 1) * np.linalg.norm(normalized_ratings, axis=1))
+model = KNNBasic()
+model.fit(trainset)
 
-similarity_matrix[np.isnan(similarity_matrix)] = 0
+predictions = model.test(testset)
 
-def predict(user_id, item_id):
-    if item_id >= ratings.shape[1] or ratings[user_id, item_id] != 0:
-        return user_means[user_id]
-    
-    weighted_sum = 0
-    weight_sum = 0
-    for i in range(ratings.shape[0]):
-        if i != user_id and ratings[i, item_id] != 0:
-            weighted_sum += similarity_matrix[user_id, i] * (ratings[i, item_id] - user_means[i])
-            weight_sum += abs(similarity_matrix[user_id, i])
-    if weight_sum == 0:
-        return user_means[user_id]
-    return user_means[user_id] + weighted_sum / weight_sum
-
-test_set = np.array([[5, 0, 0, 0],
-                     [0, 3, 0, 0],
-                     [0, 0, 4, 0],
-                     [0, 0, 0, 2],
-                     [0, 0, 0, 0]])
-
-predictions = np.zeros_like(test_set)
-for i in range(test_set.shape[0]):
-    for j in range(test_set.shape[1]):
-        predictions[i, j] = predict(i, j)
-
-rmse = sqrt(mean_squared_error(test_set[test_set != 0], predictions[test_set != 0]))
-print("Root Mean Squared Error (RMSE):", rmse)
+rmse = accuracy.rmse(predictions)
+print("RMSE:", rmse)

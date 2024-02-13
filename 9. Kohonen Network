@@ -1,0 +1,24 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+class KohonenNetwork:
+    def __init__(self, i, o, r, e):
+        self.i, self.o, self.r, self.e = i, o, r, e
+        self.w = np.random.rand(o, i)
+        self.d, self.l = np.random.rand(100, i), []
+
+    def train_model(self):
+        for _ in range(self.e):
+            for p in self.d:
+                wi = np.argmin(np.linalg.norm(self.w - p, axis=1))
+                self.w[wi] += self.r * (p - self.w[wi])
+        return self.d, self.w
+
+i, o, r, e = 2, 10, 0.1, 100
+kh = KohonenNetwork(i, o, r, e)
+d, w = kh.train_model()
+
+plt.scatter(d[:, 0], d[:, 1], label='Data Points')
+plt.scatter(w[:, 0], w[:, 1], marker='x', s=100, label='Kohonen Neurons')
+plt.legend(), plt.xlabel('x'), plt.ylabel('y'), plt.title("Kohonen Neurons")
+plt.show()

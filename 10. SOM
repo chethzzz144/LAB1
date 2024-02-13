@@ -1,0 +1,25 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+class Som:
+    def __init__(self, e, s):
+        self.w = np.random.rand(s,s,2)
+        self.d = np.random.randn(500,2)
+        self.e, self.s = e, s
+
+    def train(self):
+        for _ in range(self.e):
+            for p in self.d:
+                w = np.argmin(np.linalg.norm(self.w-p,axis=2))
+                n = np.exp(-np.linalg.norm(np.indices((self.s,self.s)).T-np.unravel_index(w,(self.s,self.s)),axis=2)/2)
+                self.w += 0.1*n[:,:,np.newaxis]*(p-self.w)
+        return self.d, self.w
+
+g, e = 10, 100
+s = Som(e,g)
+d, w = s.train()
+
+plt.scatter(s.d[:,0],s.d[:,1],label='Data Points')
+plt.scatter(s.w[:,:,0].flatten(),s.w[:,:,1].flatten(),marker='x',s=100,label='SOM Neurons')
+plt.legend()
+plt.show()
